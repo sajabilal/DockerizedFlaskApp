@@ -1,0 +1,32 @@
+node{
+	
+        stage('clone from GIT'){
+           
+                git branch: 'main', url: 'https://github.com/sajabilal/Candidate-assignment-'
+            }
+      
+        
+        stage('build Docker image'){
+           
+                bat 'docker build -t saja123/run-flask:1.0.0 .'
+            }
+        
+        
+        stage('push Docker image'){
+            
+            withCredentials([string(credentialsId: 'pwdd', variable: 'dockerhubpwd1')]) {
+                bat "docker login -u saja123 -p ${dockerhubpwd1}"
+            }
+            bat 'docker push saja123/run-flask:1.0.0'
+            
+        }
+        
+        stage('run Docker image'){
+            
+            node('jenkins_remote'){
+                            sh 'docker run -p 50000:50000 -t -d --name flask saja123/run-flask:1.0.0'
+
+            }
+             
+        }
+}
