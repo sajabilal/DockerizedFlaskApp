@@ -1,9 +1,9 @@
 from flask import Flask, request, json, jsonify
-# from flask_limiter import Limiter,util
+from flask_limiter import Limiter,util
 import ipaddress
 
 app = Flask(__name__)
-# limiter = Limiter(key_func=util.get_remote_address, app= app)
+limiter = Limiter(key_func=util.get_remote_address, app= app)
 accepted = 0
 blocked = 0
 CIDRs = 0
@@ -34,7 +34,7 @@ def check_ip(ip):
 
 
 @app.route('/')
-# @limiter.limit("3 per minute")
+@limiter.limit("3 per minute")
 def main_page():
     ip = jsonify({'ip': request.remote_addr}), 200
     if check_ip(ip) is False:
